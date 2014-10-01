@@ -1,51 +1,88 @@
 // js/controllers/mainCtrl.js
 
-// Global Controller- contains functions needed for multiple views
-
 var app = angular.module('mainController', []);
 
-app.controller('mainController', function($scope, $http){
-	// Init variables
-	// I should probably keep the key more secure somewhere (tell me how if you know!)
-	var key = '2f89bda6-7788-47b6-9bc0-8d11287f63ce' 
+app.controller('mainController', function($scope, $http, Summoner, Static){
+	// Default region = NA (NA > EU 5ever amirite)
 	$scope.region="na";
 
+	// Init function
 	$scope.onLoad = function(){
-		$http.get('https://na.api.pvp.net/api/lol/static-data/' + $scope.region + '/v1.2/versions/?api_key=' + key)
+		// Load current patch number
+		Static.getPatch($scope.region)
 			.success(function(data){
 				$scope.patch = data[0];
 			})
 			.error(function(data, status, headers, config){
 				console.log(status);
 			});
-	};
-		
-	$scope.onLoad();
 
-	$scope.$watch('region', function(){
-		$scope.onLoad();
-	});
-
-	$scope.search = function(name){
-		$scope.summoner = undefined;
-		$scope.inProgress = true;
-		$http.get('https://' + $scope.region + '.api.pvp.net/api/lol/' + $scope.region + '/v1.4/summoner/by-name/' + name + '?api_key=' + key)
+		// Load all champions
+		Static.getChamps($scope.region)
 			.success(function(data){
-				console.log("Success!");
-				$scope.inProgress = false;
-				$scope.errMsg = "";
-				$scope.processData(data);
+				$scope.allChamps = data.data;
+				console.log($scope.allChamps);
 			})
 			.error(function(data, status, headers, config){
-				$scope.inProgress = false;
-				$scope.handleSearchError(status);
+				console.log(status);
 			});
 	};
 
-	$scope.processData = function(data){
-		$scope.summoner = data[Object.keys(data)];
+	$scope.onLoad();
+	/*
+	// Change region on selection
+	$scope.$watch('region', function(){
+		$scope.getPatch();
+	}); */
+
+	// Get basic info for a summoner
+	$scope.search = function(name){
+		$scope.start();
+		Summoner.getBasicInfo($scope.region, name)
+			.success(function(data){
+				$scope.processData(data);
+				//$scope.end();
+			})
+			.error(function(data, status, headers, config){
+				$scope.handleSearchError(status);
+				$scope.end();
+			});
+	};
+
+	$scope.processData = function(obj){
+		$scope.summoner = obj[Object.keys(obj)];
+
+		// Get runes
+		Summoner.getRunes($scope.region, $scope.summoner.id)
+			.success(function(data){
+				$scope.summoner.runes = data[Object.keys(data)].pages;
+			})
+			.error(function(data, status, headers, config){
+				console.log(status);
+			});
+
+		// Get masteries
+		Summoner.getMasteries($scope.region, $scope.summoner.id)
+			.success(function(data){
+				$scope.summoner.masteries = data[Object.keys(data)].pages;
+			})
+			.error(function(data, status, headers, config){
+				console.log(status);
+			});
 		
-		console.log($scope.summoner);
+		// Get ranked stats
+		Summoner.getStats($scope.region, $scope.summoner.id)
+			.success(function(data){
+				console.log(data);
+				$scope.end();
+			})
+			.error(function(data, status, headers, config){
+				console.log(status);
+				if (status == 404)
+					$scope.errMsg = "No recent ranked stats were found";
+				$scope.end();
+			});
+
 	};
 
 	$scope.handleSearchError = function(code){
@@ -56,6 +93,17 @@ app.controller('mainController', function($scope, $http){
 		}
 		console.log("handled");
 	};
+
+	$scope.start = function(){
+		$scope.inProgress = true;
+		$scope.done = false;
+		$scope.errMsg = "";
+	}
+
+	$scope.end = function(){
+		$scope.inProgress = false;
+		$scope.done = true;
+	}
 
 	$scope.test = function(){
 		

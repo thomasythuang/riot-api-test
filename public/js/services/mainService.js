@@ -2,39 +2,33 @@
 
 var app = angular.module('mainService', []);
 
-app.factory('Images', function($http){
+// I should probably keep the key more secure somewhere (tell me how if you know!)
+var key = '2f89bda6-7788-47b6-9bc0-8d11287f63ce'
+
+app.factory('Static', function($http){
 	return{
-		get: function(){
-			return $http.get('/images');
+		getPatch: function(region){
+			return $http.get('https://na.api.pvp.net/api/lol/static-data/' + region + '/v1.2/versions?api_key=' + key);
 		},
-		delete: function(imgId){
-			return $http.delete('/images/' + imgId);
+		getChamps: function(region){
+			return $http.get('https://' + region + '.api.pvp.net/api/lol/static-data/' + region + '/v1.2/champion?api_key=' + key);
 		},
-		addFav: function(img){
-			return $http.put('/images/favorites/add', img);
-		},
-		rmvFav: function(img){
-			return $http.put('/images/favorites/remove', img);
-		},
-		update: function(formData){
-			return $http.put('/images/edit', formData);
-		},
-	}
+	};
 });
 
-app.factory('Users', function($http){
+app.factory('Summoner', function($http){
 	return{
-		profInfo: function(){
-			return $http.get('/profile/info');
+		getBasicInfo: function(region, name){
+			return $http.get('https://' + region + '.api.pvp.net/api/lol/' + region + '/v1.4/summoner/by-name/' + name + '?api_key=' + key)
 		},
-		userInfo: function(userId){
-			return $http.get('/users/info/' + userId);
+		getRunes: function(region, id){
+			return $http.get('https://' + region + '.api.pvp.net/api/lol/' + region + '/v1.4/summoner/' + id + '/runes?api_key=' + key)
 		},
-		deleteUpload: function(imgId){
-			return $http.delete('/users/uploads/' + imgId);
+		getMasteries: function(region, id){
+			return $http.get('https://' + region + '.api.pvp.net/api/lol/' + region + '/v1.4/summoner/' + id + '/masteries?api_key=' + key)
 		},
-		reset: function(){
-			return $http.post('/users/reset');
+		getStats: function(region, id){
+			return $http.get('https://' + region + '.api.pvp.net/api/lol/' + region + '/v1.3/stats/by-summoner/' + id + '/ranked?api_key=' + key)
 		},
-	}
+	};
 });

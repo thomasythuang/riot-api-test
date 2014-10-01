@@ -43,12 +43,26 @@
 		<div ng-show="inProgress">
 			<span class="fa fa-spinner fa-spin"></span>
 		</div>
-		<div ng-show="summoner">
-			<img ng-src="https://ddragon.leagueoflegends.com/cdn/{{patch}}/img/profileicon/{{summoner.profileIconId}}.png"
+		<div ng-show="done">
+			<img ng-src="https://ddragon.leagueoflegends.com/cdn/{{patch}}/img/profileicon/{{summoner.profileIconId}}.png">
 			<div> 
 				<p>Name: {{summoner.name}}</p>
 				<p>Level: {{summoner.summonerLevel}}</p>
 				<p>Last Active: {{summoner.revisionDate | date:'MM/dd/yyyy'}}</p>
+			</div>
+			<div>
+				{{summoner.runes.length}} Rune Pages:
+				(<input type="checkbox" ng-model="showRunes">Show)
+				<div ng-repeat="page in summoner.runes" ng-show="showRunes">
+					{{page.name}}
+				</div>
+			</div>
+			<div>
+				{{summoner.masteries.length}} Mastery Pages:
+				(<input type="checkbox" ng-model="showMasteries">Show)
+				<div ng-repeat="page in summoner.masteries" ng-show="showMasteries">
+					{{page.name}}
+				</div>
 			</div>
 		</div>
 		<div ng-show="errMsg">
