@@ -1,0 +1,80 @@
+<!-- public/views/index.html -->
+<!DOCTYPE html>
+
+<!-- Angular Module -->
+<html ng-app="LeagueApp" class="no-js">
+<head>
+	<!-- Meta -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Riot API Test</title>
+
+	<!-- Angular, Fonts, and Icons -->
+	<script src="/resources/angular.min.js"></script>
+	<link rel="shortcut icon" href="/img/boxes.ico">
+  <link href='//fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
+
+</head>
+
+<!-- load user data into angular controller -->
+<body ng-controller="mainController">
+	<!-- <main-navbar></main-navbar> -->
+	<h1>Rito Gaems API Test</h1>
+	<p>Current Patch: {{patch}}
+	<form ng-submit="search(sName)">
+		<h4>Summoner Name:</h4>
+		<select ng-model="region">
+			<option value="na">NA</option>
+			<option value="euw">EUW</option>
+			<option value="eune">EUNE</option>
+			<option value="kr">KR</option>
+			<option value="oce">OCE</option>
+			<option value="lan">LAN</option>
+			<option value="las">LAS</option>
+			<option value="br">BR</option>
+			<option value="ru">RU</option>
+			<option value="tr">TR</option>
+		</select>
+		<input type="text" ng-model="sName">
+		<button>Search</button>
+	</form>
+	<div>
+		<div ng-show="inProgress">
+			<span class="fa fa-spinner fa-spin"></span>
+		</div>
+		<div ng-show="summoner">
+			<img ng-src="https://ddragon.leagueoflegends.com/cdn/{{patch}}/img/profileicon/{{summoner.profileIconId}}.png"
+			<div> 
+				<p>Name: {{summoner.name}}</p>
+				<p>Level: {{summoner.summonerLevel}}</p>
+				<p>Last Active: {{summoner.revisionDate | date:'MM/dd/yyyy'}}</p>
+			</div>
+		</div>
+		<div ng-show="errMsg">
+			<p>{{errMsg}}</p>
+		</div>
+	</div>
+
+<!-- Resources -->
+
+<!-- CSS -->
+<link rel="stylesheet" href="/css/main.css"> 
+<!-- <link rel="stylesheet" href="/resources/bootstrap.min.css"> -->
+<link rel="stylesheet" href="/resources/font-awesome.min.css">
+
+<!-- Imported Resources -->
+<script src="/resources/jquery-2.1.1.min.js"></script>
+<!-- <script src="/resources/bootstrap.min.js"></script> -->
+<script src="/resources/angular-route.js"></script>
+<script src="/js/filters/truncate.js"></script>
+
+<!-- Angular Custom Components -->
+<script src="/js/coreModule.js"></script>
+<script src="/js/directives/coreDirective.js"></script>
+<script src="/js/ngRoutes.js"></script>
+<script src="/js/services/mainService.js"></script>
+<script src="/js/controllers/mainCtrl.js"></script>
+
+</body>
+</html>
